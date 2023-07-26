@@ -1,4 +1,4 @@
-const apiKey = "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";
+const apiKey = "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";
 const {Configuration, OpenAIApi} = require("openai");
 
 const configuration = new Configuration({
@@ -38,6 +38,36 @@ var schema = {
         "files_and_directories"
     ]
 };
+const fs = require('fs');
+const path = require('path');
+
+function processResponse(response, targetDirectory) {
+    // Ensure targetDirectory is correctly formatted
+    targetDirectory = path.resolve(targetDirectory);
+
+    response.files_and_directories.forEach(item => {
+        let fullPath = path.join(targetDirectory, item.name);
+
+        if(item.type === 'file') {
+            fs.writeFile(fullPath, item.content, (err) => {
+                if(err) {
+                    console.error(`Error writing file ${fullPath}`, err);
+                } else {
+                    console.log(`File ${fullPath} was written successfully.`);
+                }
+            });
+        } else if(item.type === 'directory') {
+            fs.mkdirSync(fullPath, { recursive: true }, (err) => {
+                if (err) {
+                    console.error(`Error creating directory ${fullPath}`, err);
+                } else {
+                    console.log(`Directory ${fullPath} was created successfully.`);
+                }
+            });
+        }
+    });
+}
+
 
 (async function () {
     const response = await openai.createChatCompletion({
@@ -56,5 +86,6 @@ var schema = {
         frequency_penalty: 0,
         presence_penalty: 0,
     });
-    console.log(response.data.choices[0]);
+    let response1 = JSON.parse(response.data.choices[0].message.function_call.arguments);
+    processResponse(response1,"./builds/");
 })();
