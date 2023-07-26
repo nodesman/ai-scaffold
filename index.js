@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const apiKey = "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";
+const apiKey = "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";
 const {Configuration, OpenAIApi} = require("openai");
 const configuration = new Configuration({
     apiKey: apiKey,
@@ -42,7 +42,7 @@ var schema = {
 const fs = require('fs');
 const path = require('path');
 
-function processResponse(response, targetDirectory) {
+function processResponse(response, targetDirectory, DEBUG) {
     // Ensure targetDirectory is correctly formatted
     targetDirectory = path.resolve(targetDirectory);
 
@@ -69,9 +69,11 @@ function processResponse(response, targetDirectory) {
     });
 }
 
+let FILENAME = "prompt.txt";
+
 function checkForPromptFile() {
     // Define the expected file
-    const fileName = 'prompt.txt';
+    const fileName = FILENAME;
 
     // Generate the full path
     const filePath = path.join(process.cwd(), fileName);
@@ -96,26 +98,72 @@ function checkForPromptFile() {
     }
 }
 
+function checkAndCreateTargetDirectory() {
+    let args = process.argv.slice(2); // Get CLI arguments, exclude 'node' and script path
+    let targetDirectory = 'builds'; // Default target directory
+
+    // Check if "-t" flag is used
+    let tIndex = args.indexOf('-t');
+    if (tIndex > -1 && tIndex < args.length - 1) {
+        targetDirectory = args[tIndex + 1];
+    }
+
+    // Create target directory if it doesn't exist
+    if (!fs.existsSync(targetDirectory)) {
+        fs.mkdirSync(targetDirectory, { recursive: true }); // { recursive: true } allows nested directories
+        console.log(`Created target directory: ${targetDirectory}`);
+    } else {
+        console.log(`Target directory already exists: ${targetDirectory}`);
+    }
+
+    return targetDirectory; // Return the target directory
+}
+
+
 (async function () {
 
-    checkForPromptFile();
+    var DEBUG = false;
+    if (process.env.SCAFFOLD_DEBUG === 'true') {
+        console.log('The SCAFFOLD_DEBUG environment variable is set to true');
+        console.log('Logging received response to .responses.json');
+        DEBUG = true;
+    } else {
+        console.log('The SCAFFOLD_DEBUG environment variable is not set to true');
+    }
 
+    checkForPromptFile();
+    const targetDirectory = checkAndCreateTargetDirectory();
+
+    let prompt = fs.readFileSync(FILENAME, 'utf8');
+    prompt += `
+    Be sure to include a build file if it makes sense in this context that will be necessary for any development tasks. 
+    Be sure to include a README.md with instructions to build and run the project and build it for distribution. Also include instructions to install dependencies.
+    `;
     const response = await openai.createChatCompletion({
         model: "gpt-4-0613",
         messages: [
             {
                 "role": "user",
-                "content": "Please give me the scaffold of a project - all the files and their content for a chrome extension that will allow me to add a div element to the top right of every web page that says WORKS!!"
+                "content": prompt
             }
         ],
         temperature: 1,
-        max_tokens: 256,
         functions: [{"name": "get_files_of_scaffold", "parameters": schema}],
         function_call: {"name": "get_files_of_scaffold"},
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
     });
-    let response1 = JSON.parse(response.data.choices[0].message.function_call.arguments);
-    processResponse(response1, "./builds/");
+    let responseText = response.data.choices[0].message.function_call.arguments.replace(/\n/g, '');
+    if (DEBUG) {
+        let LOG_FILE_NAME = '.responses.json';
+        let now = new Date();
+        let timestamp = now.toISOString();
+        let data = `------------\nTimestamp: ${timestamp}\n------------\n`;
+        fs.appendFileSync(LOG_FILE_NAME, data, 'utf8');
+        fs.appendFileSync(LOG_FILE_NAME, responseText, 'utf8');
+        fs.appendFileSync(LOG_FILE_NAME, responseText, 'utf8');
+    }
+    let response1 = JSON.parse(responseText);
+    processResponse(response1, targetDirectory, DEBUG);
 })();
