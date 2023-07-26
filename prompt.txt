@@ -1,0 +1,3 @@
+I want the scaffold of a chrome extension that will add a "Hello World" fixed element at the top right corner in
+every page that I visit. Please give me the code for the files that will scaffold this project,, also specify the
+ file locations in the requested json schema format.
