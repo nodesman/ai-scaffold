@@ -86,7 +86,20 @@ In debugging mode, the CLI will log the GPT-4 response to a file named `.respons
 
 ## License
 
-This project is licensed under the ISC License. See the [LICENSE](./LICENSE) file for more details.
+Copyright 2023 Rajasekharan Sundararaj (github.com/nodesman/)
+
+<strong>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to use the Software for personal use or within their organization</strong>, subject to the following conditions:
+
+1. The Software may not be redistributed, sublicensed, or made available to third parties without express written permission from the copyright holder.
+
+2. The Software may not be modified, adapted, or built upon without express written permission from the copyright holder.
+
+3. Any redistribution, sublicensing, or use of the Software in violation of these terms will be considered a breach of copyright and may be subject to legal action.
+
+THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
 
 ---
 **Note**: The provided `package.json` file is already well-configured for the `ai-scaffold` package, including the correct `bin` field pointing to the `index.mjs` file. There is no need to change anything in the `package.json` file. Simply follow the installation and setup instructions provided above to use the `ai-scaffold` CLI.
+
