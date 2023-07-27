@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
-
 const {Configuration, OpenAIApi} = require("openai");
 const apiKey = process.env.SCAFFOLD_APIKEY;
 const fs = require('fs');
 const path = require('path');
-
 
 if (!apiKey) {
     console.log('No SCAFFOLD_APIKEY environment variable set');
@@ -147,7 +145,6 @@ function checkAndCreateTargetDirectory() {
     Include a readme file if you can.     
     `;
 
-    var spinner = ora("Asking GPT-4 to do the thing ...").start();
     const response = await openai.createChatCompletion({
         model: "gpt-4-0613",
         messages: [
@@ -163,7 +160,6 @@ function checkAndCreateTargetDirectory() {
         frequency_penalty: 0,
         presence_penalty: 0,
     });
-    spinner.stop();
     let responseText = response.data.choices[0].message.function_call.arguments.replace(/\n/g, '');
     if (DEBUG) {
         let LOG_FILE_NAME = '.responses.json';
