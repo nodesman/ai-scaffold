@@ -97,9 +97,3 @@ Copyright 2023 Rajasekharan Sundararaj (github.com/nodesman/)
 3. Any redistribution, sublicensing, or use of the Software in violation of these terms will be considered a breach of copyright and may be subject to legal action.
 
 THE SOFTWARE IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-
----
-**Note**: The provided `package.json` file is already well-configured for the `ai-scaffold` package, including the correct `bin` field pointing to the `index.mjs` file. There is no need to change anything in the `package.json` file. Simply follow the installation and setup instructions provided above to use the `ai-scaffold` CLI.
-
