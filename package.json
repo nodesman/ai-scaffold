@@ -1,14 +1,11 @@
 {
   "name": "ai-scaffold",
   "version": "1.0.0",
-  "description": "Command-line tool using GPT-4 to generate files and directories based on a prompt.",
+  "description": "Command-line tool using GPT-4 to scaffold any kind of software project's files and directories based on a prompt.",
   "main": "index.mjs",
   "repository": {
     "type": "git",
     "url": "git@github.com:nodesman/ai-scaffold.git"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "nodesman",
   "license": "All Rights Reserved",
