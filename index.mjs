@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+import ora from "ora";
+import { Configuration, OpenAIApi } from "openai";
+import fs from 'fs';
+import path from 'path';
 
-const {Configuration, OpenAIApi} = require("openai");
 const apiKey = process.env.SCAFFOLD_APIKEY;
-const fs = require('fs');
-const path = require('path');
 
 if (!apiKey) {
     console.log('No SCAFFOLD_APIKEY environment variable set');
@@ -85,6 +86,8 @@ function checkForPromptFile() {
     // Generate the full path
     const filePath = path.join(process.cwd(), fileName);
 
+
+
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
         console.log(`Expected a file named ${fileName} in the current directory.`);
@@ -92,16 +95,15 @@ function checkForPromptFile() {
         process.exit(1);
     } else {
         // Check if the file is readable
-        fs.access(filePath, fs.constants.R_OK, (err) => {
-            if (err) {
-                console.log(`The file ${fileName} is not readable.`);
-                console.log('Please check the file permissions and try again.');
-                process.exit(1);
-            } else {
-                console.log(`${fileName} exists and is readable in the current directory.`);
-                // Add logic here to process the file if it exists and is readable
-            }
-        });
+        try {
+            fs.accessSync(filePath, fs.constants.R_OK);
+            console.log(`${fileName} exists and is readable in the current directory.`);
+            // Add logic here to process the file if it exists and is readable
+        } catch (err) {
+            console.log(`The file ${fileName} is not readable.`);
+            console.log('Please check the file permissions and try again.');
+            process.exit(1);
+        }
     }
 }
 
@@ -142,9 +144,10 @@ function checkAndCreateTargetDirectory() {
 
     let prompt = fs.readFileSync(FILENAME, 'utf8');
     prompt += `
+    Do not follow code best practices, generate as minimum number of files as possible. Even use single file for the whole definition if possible. 
     Include a readme file if you can.     
     `;
-
+    var spinner= ora("Asking GPT-4 to do the thing ...").start();
     const response = await openai.createChatCompletion({
         model: "gpt-4-0613",
         messages: [
@@ -160,6 +163,7 @@ function checkAndCreateTargetDirectory() {
         frequency_penalty: 0,
         presence_penalty: 0,
     });
+    spinner.stop();
     let responseText = response.data.choices[0].message.function_call.arguments.replace(/\n/g, '');
     if (DEBUG) {
         let LOG_FILE_NAME = '.responses.json';
