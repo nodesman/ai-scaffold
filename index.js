@@ -1,7 +1,18 @@
 #!/usr/bin/env node
 
-const apiKey = "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";
+
 const {Configuration, OpenAIApi} = require("openai");
+const apiKey = process.env.SCAFFOLD_APIKEY;
+const fs = require('fs');
+const path = require('path');
+
+
+if (!apiKey) {
+    console.log('No SCAFFOLD_APIKEY environment variable set');
+    process.exit(1);
+} else {
+    console.log('SCAFFOLD_APIKEY is set');
+}
 const configuration = new Configuration({
     apiKey: apiKey,
 });
@@ -39,8 +50,6 @@ var schema = {
         "files_and_directories"
     ]
 };
-const fs = require('fs');
-const path = require('path');
 
 function processResponse(response, targetDirectory, DEBUG) {
     // Ensure targetDirectory is correctly formatted
@@ -121,7 +130,6 @@ function checkAndCreateTargetDirectory() {
 
 
 (async function () {
-
     var DEBUG = false;
     if (process.env.SCAFFOLD_DEBUG === 'true') {
         console.log('The SCAFFOLD_DEBUG environment variable is set to true');
@@ -136,9 +144,10 @@ function checkAndCreateTargetDirectory() {
 
     let prompt = fs.readFileSync(FILENAME, 'utf8');
     prompt += `
-    Be sure to include a build file if it makes sense in this context that will be necessary for any development tasks. 
-    Be sure to include a README.md with instructions to build and run the project and build it for distribution. Also include instructions to install dependencies.
+    Include a readme file if you can.     
     `;
+
+    var spinner = ora("Asking GPT-4 to do the thing ...").start();
     const response = await openai.createChatCompletion({
         model: "gpt-4-0613",
         messages: [
@@ -154,6 +163,7 @@ function checkAndCreateTargetDirectory() {
         frequency_penalty: 0,
         presence_penalty: 0,
     });
+    spinner.stop();
     let responseText = response.data.choices[0].message.function_call.arguments.replace(/\n/g, '');
     if (DEBUG) {
         let LOG_FILE_NAME = '.responses.json';
