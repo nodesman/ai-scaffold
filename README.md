@@ -1,6 +1,8 @@
 # ai-scaffold
 
-The `ai-scaffold` is a command-line tool that uses GPT-4 to generate files and directories based on a provided prompt. It allows you to quickly scaffold a instantly runnable project with moderately complex functionality pre-written by GPT-4 using a text prompt.
+The `ai-scaffold` is a command-line tool that uses GPT-4 to generate files and directories based on a provided prompt. It allows you to quickly scaffold a instantly runnable project with some pre-written by GPT-4 using a text prompt. The extent of code generation is currently limited only by the response token limit from OpenAI but with the modest token limits small software projects can be generated based on a prompt. 
+
+The prompt itself can be as long as 8192 tokens. [Click here](https://platform.openai.com/tokenizer) to test if your prompt is within those limits.  
 
 ## Installation
 
