@@ -50,6 +50,7 @@ var schema = {
     ]
 };
 
+
 function processResponse(response, targetDirectory, DEBUG) {
     // Ensure targetDirectory is correctly formatted
     targetDirectory = path.resolve(targetDirectory);
@@ -58,25 +59,35 @@ function processResponse(response, targetDirectory, DEBUG) {
         let fullPath = path.join(targetDirectory, item.name);
 
         if (item.type === 'file') {
-            fs.writeFile(fullPath, item.content, (err) => {
-                if (err) {
-                    console.error(`Error writing file ${fullPath}`, err);
-                } else {
-                    console.log(`File ${fullPath} was written successfully.`);
+            // Check if the directory exists before writing the file
+            const directoryPath = path.dirname(fullPath);
+            if (!fs.existsSync(directoryPath)) {
+                try {
+                    fs.mkdirSync(directoryPath, { recursive: true });
+                } catch (err) {
+                    console.error(`Error creating directory ${directoryPath}`, err);
                 }
-            });
+            }
+
+            try {
+                fs.writeFileSync(fullPath, item.content);
+                console.log(`File ${fullPath} was written successfully.`);
+            } catch (err) {
+                console.error(`Error writing file ${fullPath}`, err);
+            }
         } else if (item.type === 'directory') {
-            fs.mkdirSync(fullPath, {recursive: true}, (err) => {
-                if (err) {
-                    console.error(`Error creating directory ${fullPath}`, err);
-                } else {
+            // Check if the directory exists before creating the directory
+            if (!fs.existsSync(fullPath)) {
+                try {
+                    fs.mkdirSync(fullPath, { recursive: true });
                     console.log(`Directory ${fullPath} was created successfully.`);
+                } catch (err) {
+                    console.error(`Error creating directory ${fullPath}`, err);
                 }
-            });
+            }
         }
     });
 }
-
 let FILENAME = "prompt.txt";
 
 function checkForPromptFile() {
@@ -144,8 +155,26 @@ function checkAndCreateTargetDirectory() {
 
     let prompt = fs.readFileSync(FILENAME, 'utf8');
     prompt += `
-    Do not follow code best practices, generate as minimum number of files as possible. Even use single file for the whole definition if possible. 
-    Include a readme file if you can.     
+    
+    After you are done coming up with the entire code base, give me the content of the entire project as files but instead of putting the entire code in the paths, put a prompt in that file's content that will when given to GPT-4 will give me the intended file content. 
+    In order to facilitate the proper development of files via the GPT-4 AI, please ensure you provide all necessary context within the prompt. This context should sufficiently direct the AI to generate the appropriate file content. The prompt must be inclusive of all specific details such as identifier names, path names, and file names as required. This is to ensure that when these files are brought together, they seamlessly integrate and make logical sense as a whole.
+
+    It's important to focus solely on the file's content in the prompt text for each file. You need not worry about defining the broader context or file location. I am writing a script to correctly place the output from GPT-4 into the respective file. Please provide a prompt that, given the project description and the corresponding content for this file, will generate the necessary output.
+    
+    Take into account the length of each prompt file you create. The prompt can be up to 8192 tokens long, so feel free to be as verbose as needed in order to create specific, detailed prompts.
+    
+    Carrying over and specifying identifier names from one file to another is essential. For instance, if you specify in your Sass file prompt that the navigation element will have a class named 'main-nav', ensure that this is also reflected in the layout prompt.
+    
+    Try to avoid making abstract statements in these file prompts. For example, avoid statements like 'links to privacy policy and terms of service (if any), and possibly social media links'. In your prompts, assume a definitive structure and stick to creating content based on that. All content should be considered mandatory unless otherwise stated.
+    
+    When outlining these specifications, ensure you provide clear details such as the label of the link, and offer a detailed description of the Document Object Model (DOM), with the exception of the username.
+    
+    If providing this level of specificity would help in generating a more accurate outcome, then respond with a single file named 'questions.txt' containing a series of questions. I can provide the answers in my next prompt, which would subsequently allow you to generate clearer prompts leading to a fully runnable piece of code.
+    
+     
+    Include a readme file if you can.
+    
+    
     `;
     var spinner= ora("Asking GPT-4 to do the thing ...").start();
     const response = await openai.createChatCompletion({
