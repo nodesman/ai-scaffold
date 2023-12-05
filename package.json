@@ -1,6 +1,6 @@
 {
   "name": "ai-scaffold",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Command-line tool using GPT-4 to scaffold any kind of software project's files and directories based on a prompt.",
   "main": "index.mjs",
   "repository": {
