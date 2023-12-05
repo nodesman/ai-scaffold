@@ -149,7 +149,7 @@ function checkAndCreateTargetDirectory() {
     `;
     var spinner= ora("Asking GPT-4 to do the thing ...").start();
     const response = await openai.createChatCompletion({
-        model: "gpt-4-0613",
+        model: "gpt-4-1106-preview",
         messages: [
             {
                 "role": "user",
